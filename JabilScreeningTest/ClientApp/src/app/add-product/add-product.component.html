@@ -1,0 +1,60 @@
+<div class="row">
+  <div class="col-sm-6">
+    <div class="row">
+      <div class="col-sm-2">
+        <a routerLink="/login" class="btn btn-primary btn-sm">Back</a>
+      </div>
+      <div class="col-sm-7">
+        <h4 *ngIf="productId==0">Add Product</h4>
+        <h4 *ngIf="productId!=0">Update Product</h4>
+      </div>
+    </div>
+    <hr />
+    <form [formGroup]="addProductForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" maxlength="50" formControlName="name" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
+        <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+          <div *ngIf="f.name.errors.required">Name is required</div>
+          <div *ngIf="f.name.errors.maxLength">Name can not be longer than 50 characters</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price</label>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">$</span>
+          </div>
+          <input type="number" (keypress)="validateNumber($event)" step="any" formControlName="price" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.price.errors }" aria-label="Amount (to the nearest dollar)">
+          <div class="input-group-append">
+            <span class="input-group-text">.00</span>
+          </div>
+          <div *ngIf="submitted && f.price.errors" class="invalid-feedback">
+            <div *ngIf="f.price.errors.required">Price is required</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="quantity">Quantity</label>
+        <input type="number" formControlName="quantity" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.quantity.errors }" />
+        <div *ngIf="submitted && f.quantity.errors" class="invalid-feedback">
+          <div *ngIf="f.quantity.errors.required">Quantity is required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button [disabled]="loading" class="btn btn-primary" type="submit">
+          <span *ngIf="productId==0">Submit</span>
+          <span *ngIf="productId!=0">Update</span>
+        </button>
+        <button style="margin-left:10px;" class="btn btn-secondary" (click)="resetForm()" type="reset">
+          <span>Reset</span>
+        </button>
+      </div>
+
+    </form>
+    <ngx-spinner></ngx-spinner>
+  </div>
+</div>

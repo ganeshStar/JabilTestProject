@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -39,6 +39,24 @@
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\src\app\_components\button-renderer.component.ts" />
+    <None Remove="ClientApp\src\app\_models\Inventory.ts" />
+    <None Remove="ClientApp\src\app\_services\commonHandler.ts" />
+    <None Remove="ClientApp\src\app\_services\inventory.service.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\_components\button-renderer.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\_models\Inventory.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\_services\commonHandler.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\_services\inventory.service.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Database\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

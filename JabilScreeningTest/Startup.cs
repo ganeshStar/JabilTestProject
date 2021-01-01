@@ -1,4 +1,5 @@
 using AutoMapper;
+using JabilScreeningTest.Auth;
 using JabilScreeningTest.Entities;
 using JabilScreeningTest.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,7 +41,20 @@ namespace JabilScreeningTest
                 configuration.RootPath = "ClientApp/dist";
             });
 
+            services.AddIdentity<AppUser, IdentityRole<string>>
+                (o =>
+                {
+                    // configure identity options
+                    o.Password.RequireDigit = false;
+                    o.Password.RequireLowercase = false;
+                    o.Password.RequireUppercase = false;
+                    o.Password.RequireNonAlphanumeric = false;
+                    o.Password.RequiredLength = 6;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
+            services.AddSingleton<IJwtFactory, JwtFactory>();
             // jwt wire up
             // Get options from app settings
             var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
@@ -76,18 +90,7 @@ namespace JabilScreeningTest
                options.TokenValidationParameters = tokenValidationParameters;
            });
 
-            services.AddIdentity<AppUser, IdentityRole<string>>
-                (o =>
-                {
-                    // configure identity options
-                    o.Password.RequireDigit = false;
-                    o.Password.RequireLowercase = false;
-                    o.Password.RequireUppercase = false;
-                    o.Password.RequireNonAlphanumeric = false;
-                    o.Password.RequiredLength = 6;
-                })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,7 +106,6 @@ namespace JabilScreeningTest
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             if (!env.IsDevelopment())

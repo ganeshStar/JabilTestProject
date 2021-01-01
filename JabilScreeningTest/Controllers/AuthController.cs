@@ -19,7 +19,6 @@ namespace JabilScreeningTest.Controllers
         private readonly IJwtFactory _jwtFactory;
         private readonly JsonSerializerSettings _serializerSettings;
         private readonly JwtIssuerOptions _jwtOptions;
-
         public AuthController(UserManager<AppUser> userManager, IJwtFactory jwtFactory, IOptions<JwtIssuerOptions> jwtOptions)
         {
             _userManager = userManager;
@@ -38,22 +37,29 @@ namespace JabilScreeningTest.Controllers
         /// <param name="credentials"></param>
         /// <returns></returns>
         [HttpPost("login")]
-        public async Task<IActionResult> Post([FromBody] CredentialModel credentials)
+        public async Task<IActionResult> Login([FromBody] CredentialModel credentials)
         {
             try
             {
                 var identity = await GetClaimsIdentity(credentials.UserName, credentials.Password);
                 if (identity == null)
                 {
-                    return BadRequest("Invalid username or password.");
+                    var error = new
+                    {
+                        message = "Invalid username or password"
+                    };
+                    var errroJson = JsonConvert.SerializeObject(error, _serializerSettings);
+                    return new BadRequestObjectResult(errroJson);
                 }
 
                 // Serialize and return the response
                 var response = new
                 {
                     id = identity.Claims.Single(c => c.Type == "id").Value,
-                    auth_token = await _jwtFactory.GenerateEncodedToken(credentials.UserName, identity),
-                    expires_in = (int)_jwtOptions.ValidFor.TotalSeconds
+                    token = await _jwtFactory.GenerateEncodedToken(credentials.UserName, identity),
+                    expiresin = (int)_jwtOptions.ValidFor.TotalSeconds,
+                    username = credentials.UserName,
+                    email = "",
                 };
 
                 var json = JsonConvert.SerializeObject(response, _serializerSettings);
@@ -66,8 +72,8 @@ namespace JabilScreeningTest.Controllers
         }
 
         /// <summary>
-        /// Get Claims Identity
-        /// </summary>
+        /// Get Claims Identity                  
+        /// </summary>                                 
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
